@@ -1,8 +1,7 @@
 # AI workout planner using OpenAI Chat API
+This repo contains a very simple example on how ChatGPT functionality can be built into your own app.
 
-This repo contains a very simple example on how ChatGPT functionality can be built into your own app. 
-
-## App worklfow
+## App workflow
 
 The main appp displays a list of different trainings that is loaded from a static JSON file. By default, the training details column is empty. Then, we ask OpenAI Chat Completion API to give us a suggestion for the workout based on the place and the type of the workout.
 
