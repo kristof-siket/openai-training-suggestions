@@ -1,0 +1,241 @@
+[
+  {
+    "id": "schema.public",
+    "label": "Create schema \"public\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "Create schema \"public\"",
+        "sql": "CREATE SCHEMA IF NOT EXISTS \"public\"",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "table.Exercise",
+    "label": "Create table \"Exercise\"",
+    "summary": "Creates table \"Exercise\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Exercise"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Exercise\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Exercise\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"Exercise\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Exercise\"",
+        "sql": "CREATE TABLE \"public\".\"Exercise\" (\n  \"details\" text,\n  \"id\" SERIAL NOT NULL,\n  \"place\" text NOT NULL,\n  \"type\" text NOT NULL,\n  \"workoutId\" int4 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Exercise\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"Exercise\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"Exercise\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.Workout",
+    "label": "Create table \"Workout\"",
+    "summary": "Creates table \"Workout\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Workout"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Workout\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Workout\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"Workout\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Workout\"",
+        "sql": "CREATE TABLE \"public\".\"Workout\" (\n  \"date\" text NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Workout\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"Workout\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"Workout\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "index.Exercise.Exercise_workoutId_idx_7a4e5f00",
+    "label": "Create index \"Exercise_workoutId_idx_7a4e5f00\" on \"Exercise\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Exercise_workoutId_idx_7a4e5f00",
+        "table": "Exercise"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Exercise_workoutId_idx_7a4e5f00\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Exercise_workoutId_idx_7a4e5f00\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"Exercise_workoutId_idx_7a4e5f00\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Exercise_workoutId_idx_7a4e5f00\"",
+        "sql": "CREATE INDEX \"Exercise_workoutId_idx_7a4e5f00\" ON \"public\".\"Exercise\" (\"workoutId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Exercise_workoutId_idx_7a4e5f00\" exists on \"Exercise\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"Exercise_workoutId_idx_7a4e5f00\"",
+          "i",
+          "I",
+          "\"public\".\"Exercise\"",
+          "btree",
+          "[\"workoutId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Exercise.Exercise_workoutId_fkey",
+    "label": "Add foreign key \"Exercise_workoutId_fkey\" on \"Exercise\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Exercise_workoutId_fkey",
+        "table": "Exercise"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Exercise_workoutId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Exercise_workoutId_fkey",
+          "public",
+          "\"public\".\"Exercise\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"Exercise_workoutId_fkey\" on \"Exercise\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Exercise_workoutId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Exercise\"\nADD CONSTRAINT \"Exercise_workoutId_fkey\"\nFOREIGN KEY (\"workoutId\")\nREFERENCES \"public\".\"Workout\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Exercise_workoutId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "Exercise_workoutId_fkey",
+          "public",
+          "\"public\".\"Exercise\"",
+          "f",
+          "[\"workoutId\"]",
+          "\"public\".\"Workout\"",
+          "[\"id\"]",
+          "c",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "seed.workouts",
+    "label": "Seed the initial workouts",
+    "operationClass": "additive",
+    "target": {
+      "id": "seed-workouts",
+      "details": {
+        "schema": "public",
+        "name": "Workout"
+      }
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "Insert the initial workouts",
+        "sql": "INSERT INTO \"public\".\"Workout\" (\"date\") VALUES\n  ('2023-03-21'),\n  ('2023-03-22'),\n  ('2023-03-23'),\n  ('2023-03-24'),\n  ('2023-03-25'),\n  ('2023-03-26'),\n  ('2023-03-27'),\n  ('2023-03-28');"
+      },
+      {
+        "description": "Insert the initial exercises",
+        "sql": "INSERT INTO \"public\".\"Exercise\" (\"workoutId\", \"type\", \"place\") VALUES\n  (1, 'leg', 'gym'),\n  (1, 'arm', 'home'),\n  (2, 'cardio', 'office'),\n  (2, 'chest', 'gym'),\n  (3, 'back', 'home'),\n  (3, 'leg', 'gym'),\n  (4, 'arm', 'office'),\n  (4, 'chest', 'gym'),\n  (5, 'cardio', 'home'),\n  (5, 'leg', 'gym'),\n  (6, 'back', 'office'),\n  (6, 'chest', 'gym'),\n  (7, 'arm', 'home'),\n  (7, 'leg', 'gym'),\n  (8, 'cardio', 'gym'),\n  (8, 'chest', 'gym');"
+      }
+    ],
+    "postcheck": []
+  }
+]
