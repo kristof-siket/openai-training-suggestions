@@ -1,6 +1,5 @@
-const WORKOUTS_API_URL = "http://localhost:5000/workouts";
-const OPENAI_API_KEY = "YOUR_OPENAPI_KEY";
-const CHAT_API_URL = "https://api.openai.com/v1/chat/completions";
+const WORKOUTS_API_URL = "./workouts";
+const CHAT_API_URL = "./openai/chat/completions";
 
 const fetchWorkoutList = async () => {
   const res = await fetch(WORKOUTS_API_URL);
@@ -74,7 +73,6 @@ const getAISuggestion = async (workout) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
         },
         body: JSON.stringify(chatGptQuestion),
       });
